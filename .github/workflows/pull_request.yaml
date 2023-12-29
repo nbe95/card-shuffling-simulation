@@ -1,0 +1,29 @@
+name: Lint
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+jobs:
+  lint:
+    name: Lint the Python code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up OpenLDAP build prerequisites
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: python3-dev libldap2-dev libsasl2-dev slapd ldap-utils
+          version: 1.0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install tox
+        run: pip install tox
+      - name: Run tox
+        run: tox -e lint
